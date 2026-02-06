@@ -1,0 +1,9 @@
+ippsec_data/
+ippsec_brain_db/
+__pycache__/
+*.srt
+*.txt
+.env
+.agent/
+.gemini/
+.DS_Store
