@@ -1,5 +1,9 @@
+# Raw transcripts (re-downloadable via harvesters)
 ippsec_data/
-ippsec_brain_db/
+s4vitar_data/
+
+# Database is included for instant use on clone
+# ippsec_brain_db/
 __pycache__/
 *.srt
 *.txt

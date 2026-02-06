@@ -4,7 +4,7 @@ from langchain_chroma import Chroma
 
 # Configuración (debe coincidir con ingest.py)
 DB_PATH = "ippsec_brain_db"
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 from sentence_transformers import CrossEncoder
 

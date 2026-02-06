@@ -6,24 +6,30 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 
 # Configuración
-DATA_FOLDER = "ippsec_data"
+DATA_FOLDERS = ["ippsec_data", "s4vitar_data"]
 DB_PATH = "ippsec_brain_db"
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+# Modelo multilingüe para mapear Inglés y Español al mismo espacio vectorial
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 def ingest_data():
-    print(f"[*] Inicializando IppSec Brain Ingestion...")
+    print(f"[*] Inicializando Brain Ingestion (Multilingüe)...")
     
-    # 1. Cargar documentos
-    txt_files = glob.glob(os.path.join(DATA_FOLDER, "*.txt"))
-    print(f"[*] Encontrados {len(txt_files)} archivos de transcripción.")
-    
+    # 1. Cargar documentos de ambas fuentes
     documents = []
-    for file_path in txt_files:
-        try:
-            loader = TextLoader(file_path, encoding='utf-8')
-            documents.extend(loader.load())
-        except Exception as e:
-            print(f"[!] Error cargando {file_path}: {e}")
+    for folder in DATA_FOLDERS:
+        txt_files = glob.glob(os.path.join(folder, "*.txt"))
+        print(f"[*] Carpeta '{folder}': {len(txt_files)} archivos encontrados.")
+        
+        for file_path in txt_files:
+            try:
+                # Añadimos metadatos para saber si es IppSec o S4vitar
+                loader = TextLoader(file_path, encoding='utf-8')
+                docs = loader.load()
+                for doc in docs:
+                    doc.metadata['source_type'] = folder
+                documents.extend(docs)
+            except Exception as e:
+                print(f"[!] Error cargando {file_path}: {e}")
 
     print(f"[*] Total documentos cargados: {len(documents)}")
 
@@ -57,9 +63,10 @@ def ingest_data():
         collection_name="ippsec_brain"
     )
 
-    for i in range(0, len(texts), batch_size):
+    from tqdm import tqdm
+    # Usamos tqdm para mostrar una barra de progreso visual
+    for i in tqdm(range(0, len(texts), batch_size), desc="Ingestando Conocimiento", unit="batch"):
         batch = texts[i:i + batch_size]
-        print(f"[*] Procesando batch {i // batch_size + 1}/{total_batches}...")
         vectorstore.add_documents(documents=batch)
         
     print("[*] Ingestión completada exitosamente.")

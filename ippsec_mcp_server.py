@@ -8,8 +8,9 @@ mcp = FastMCP("IppSec-Brain")
 @mcp.tool()
 def ask_ippsec(question: str) -> str:
     """
-    Ask IppSec a question about CTF, hacking techniques, or machine walkthroughs.
-    Returns the top relevant excerpts from his videos with high precision (Re-ranked).
+    Ask IppSec & S4vitar a question about CTF, hacking techniques, or machine walkthroughs.
+    Supports queries in **English and Spanish**.
+    Returns the top relevant excerpts from videos with high precision (Re-ranked).
     Use this tool when you need expert advice on how to solve a specific hacking problem.
     """
     try:
